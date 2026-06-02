@@ -1,5 +1,4 @@
 import { Document, Page, Text, View, StyleSheet, Image } from '@react-pdf/renderer';
-import { logoBase64 } from '../logoBase64';
 
 const styles = StyleSheet.create({
   page: {
@@ -152,13 +151,23 @@ export function ReceiptPDF({ receipt }) {
   const currentDateTime = getCurrentDateTime();
   const paymentDateTime = formatPaymentDate(receipt.date, receipt.time);
 
+  // Determine the correct logo path based on environment
+  const getLogoPath = () => {
+    // Check if we're on GitHub Pages
+    if (typeof window !== 'undefined' && window.location.hostname.includes('github.io')) {
+      return '/E_Receipt/house.jpeg';
+    }
+    // Local development
+    return '/house.jpeg';
+  };
+
   return (
     <Document>
       <Page size="A4" style={styles.page}>
-        {/* Header with Logo - Using embedded Base64 for reliability */}
+        {/* Header with Logo */}
         <View style={styles.header}>
           <View style={styles.logoContainer}>
-            <Image src={logoBase64} style={styles.logo} />
+            <Image src={getLogoPath()} style={styles.logo} />
           </View>
           <View style={styles.titleContainer}>
             <Text style={styles.businessName}>511 HOMES</Text>
