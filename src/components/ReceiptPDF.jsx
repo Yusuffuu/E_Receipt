@@ -116,7 +116,6 @@ const styles = StyleSheet.create({
   },
 });
 
-// Make sure this is exported correctly
 export function ReceiptPDF({ receipt }) {
   // Get current date and time for receipt generation
   const getCurrentDateTime = () => {
@@ -152,13 +151,28 @@ export function ReceiptPDF({ receipt }) {
   const currentDateTime = getCurrentDateTime();
   const paymentDateTime = formatPaymentDate(receipt.date, receipt.time);
 
+  // Get the correct image URL for GitHub Pages
+  const getImageUrl = () => {
+    // For production on GitHub Pages
+    if (typeof window !== 'undefined') {
+      const isGitHubPages = window.location.hostname.includes('github.io');
+      if (isGitHubPages) {
+        return './E_Receipt/public/house.jpeg';
+      }
+    }
+    // For local development
+    return './E_Receipt/public/house.jpeg';
+  };
+
+  const logoUrl = getImageUrl();
+
   return (
     <Document>
       <Page size="A4" style={styles.page}>
         {/* Header with Logo */}
         <View style={styles.header}>
           <View style={styles.logoContainer}>
-            {receipt.logo && <Image src={receipt.logo} style={styles.logo} />}
+            <Image src={logoUrl} style={styles.logo} />
           </View>
           <View style={styles.titleContainer}>
             <Text style={styles.businessName}>511 HOMES</Text>
@@ -224,5 +238,4 @@ export function ReceiptPDF({ receipt }) {
   );
 }
 
-// Also add a default export for safety
 export default ReceiptPDF;
