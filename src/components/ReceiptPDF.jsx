@@ -1,4 +1,5 @@
-import { Document, Page, Text, View, StyleSheet, Image } from '@react-pdf/renderer';
+import { Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
+import { HouseLogo } from './Logo';
 
 const styles = StyleSheet.create({
   page: {
@@ -6,7 +7,6 @@ const styles = StyleSheet.create({
     fontFamily: 'Helvetica',
     backgroundColor: '#ffffff',
   },
-  // Header Section with Logo
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -19,11 +19,6 @@ const styles = StyleSheet.create({
   logoContainer: {
     width: 80,
     height: 80,
-  },
-  logo: {
-    width: '100%',
-    height: '100%',
-    objectFit: 'contain',
   },
   titleContainer: {
     flex: 1,
@@ -40,7 +35,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#333333',
   },
-  // Info Box
   infoBox: {
     marginBottom: 25,
     border: 1,
@@ -62,7 +56,6 @@ const styles = StyleSheet.create({
     width: '65%',
     color: '#000000',
   },
-  // Payment Details Section
   sectionTitle: {
     fontSize: 14,
     fontWeight: 'bold',
@@ -89,7 +82,6 @@ const styles = StyleSheet.create({
     width: '65%',
     color: '#000000',
   },
-  // Footer
   footer: {
     marginTop: 40,
     borderTopWidth: 1,
@@ -117,7 +109,6 @@ const styles = StyleSheet.create({
 });
 
 export function ReceiptPDF({ receipt }) {
-  // Get current date and time for receipt generation
   const getCurrentDateTime = () => {
     const now = new Date();
     const day = String(now.getDate()).padStart(2, '0');
@@ -129,11 +120,9 @@ export function ReceiptPDF({ receipt }) {
     hours = hours % 12;
     hours = hours ? hours : 12;
     const timeStr = `${hours}:${minutes} ${ampm}`;
-    
     return `${day}/${month}/${year} ${timeStr}`;
   };
 
-  // Format payment date nicely
   const formatPaymentDate = (dateStr, timeStr) => {
     if (dateStr && dateStr !== 'N/A') {
       return `${dateStr} ${timeStr || ''}`.trim();
@@ -141,7 +130,6 @@ export function ReceiptPDF({ receipt }) {
     return 'N/A';
   };
 
-  // Format amount
   const formatAmount = (amount) => {
     const numAmount = parseFloat(amount);
     if (isNaN(numAmount)) return amount;
@@ -151,23 +139,12 @@ export function ReceiptPDF({ receipt }) {
   const currentDateTime = getCurrentDateTime();
   const paymentDateTime = formatPaymentDate(receipt.date, receipt.time);
 
-  // Determine the correct logo path based on environment
-  const getLogoPath = () => {
-    // Check if we're on GitHub Pages
-    if (typeof window !== 'undefined' && window.location.hostname.includes('github.io')) {
-      return '/E_Receipt/house.jpeg';
-    }
-    // Local development
-    return '/house.jpeg';
-  };
-
   return (
     <Document>
       <Page size="A4" style={styles.page}>
-        {/* Header with Logo */}
         <View style={styles.header}>
           <View style={styles.logoContainer}>
-            <Image src={getLogoPath()} style={styles.logo} />
+            <HouseLogo size={80} />
           </View>
           <View style={styles.titleContainer}>
             <Text style={styles.businessName}>511 HOMES</Text>
@@ -175,7 +152,6 @@ export function ReceiptPDF({ receipt }) {
           </View>
         </View>
 
-        {/* Customer Information Box */}
         <View style={styles.infoBox}>
           <View style={styles.infoRow}>
             <Text style={styles.infoLabel}>Name:</Text>
@@ -187,7 +163,6 @@ export function ReceiptPDF({ receipt }) {
           </View>
         </View>
 
-        {/* Payment Details Section */}
         <Text style={styles.sectionTitle}>Payment Details</Text>
         
         <View style={styles.paymentRow}>
@@ -215,7 +190,6 @@ export function ReceiptPDF({ receipt }) {
           <Text style={styles.paymentValue}>{receipt.description || 'Payment for goods/services'}</Text>
         </View>
 
-        {/* Footer */}
         <View style={styles.footer}>
           <Text style={styles.footerText}>
             Document is generated digitally as receipt payment acknowledgment
