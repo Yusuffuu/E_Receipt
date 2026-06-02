@@ -12,11 +12,18 @@ function App() {
     date: '',
     time: '',
     txnId: '',
-    description: ''
+    description: '',
+    houseNumber: '',
+    previousBalance: '0',
+    paidForMonth: '',
+    currentBalance: '0'
   });
   const [pastReceipts, setPastReceipts] = useState([]);
   const [showHistory, setShowHistory] = useState(false);
   const [isParsing, setIsParsing] = useState(false);
+
+  // Constants
+  const MONTHLY_RENT = 2000; // Fixed rent amount
 
   useEffect(() => {
     loadHistory();
@@ -25,6 +32,15 @@ function App() {
   const loadHistory = async () => {
     const receipts = await getAllReceipts();
     setPastReceipts(receipts);
+  };
+
+  // Calculate current balance
+  const calculateCurrentBalance = (previousBalance, amountPaid) => {
+    const prev = parseFloat(previousBalance) || 0;
+    const paid = parseFloat(amountPaid) || 0;
+    const totalDue = prev + MONTHLY_RENT;
+    const current = totalDue - paid;
+    return current.toFixed(2);
   };
 
   const handleParse = async () => {
@@ -42,15 +58,46 @@ function App() {
         date: parsed.date,
         time: parsed.time,
         txnId: parsed.txnId,
-        description: 'Payment for rent'  // Default description
+        description: 'Payment for rent',
+        houseNumber: '',
+        previousBalance: '0',
+        paidForMonth: '',
+        currentBalance: '0'
       });
       setIsParsing(false);
     }, 500);
   };
 
+  // Update current balance when amount, previous balance, or monthly rent changes
+  const handleAmountChange = (value) => {
+    setReceiptData(prev => {
+      const newAmount = value;
+      const newCurrentBalance = calculateCurrentBalance(prev.previousBalance, newAmount);
+      return { ...prev, amount: newAmount, currentBalance: newCurrentBalance };
+    });
+  };
+
+  const handlePreviousBalanceChange = (value) => {
+    setReceiptData(prev => {
+      const newPreviousBalance = value;
+      const newCurrentBalance = calculateCurrentBalance(newPreviousBalance, prev.amount);
+      return { ...prev, previousBalance: newPreviousBalance, currentBalance: newCurrentBalance };
+    });
+  };
+
   const handleSaveReceipt = async () => {
     if (!receiptData.amount || !receiptData.sender) {
       alert('⚠️ Please fill all required fields');
+      return;
+    }
+
+    if (!receiptData.houseNumber) {
+      alert('⚠️ Please enter the house number');
+      return;
+    }
+
+    if (!receiptData.paidForMonth) {
+      alert('⚠️ Please enter the month being paid for');
       return;
     }
 
@@ -70,7 +117,9 @@ function App() {
   const clearForm = () => {
     setSmsText('');
     setReceiptData({
-      amount: '', sender: '', date: '', time: '', txnId: '', description: 'Payment for rent'
+      amount: '', sender: '', date: '', time: '', txnId: '', 
+      description: 'Payment for rent', houseNumber: '', 
+      previousBalance: '0', paidForMonth: '', currentBalance: '0'
     });
   };
 
@@ -142,6 +191,7 @@ function App() {
                 </h2>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Existing Fields */}
                   <div>
                     <label className="block text-sm font-semibold text-gray-600 mb-1">Customer Name</label>
                     <input 
@@ -153,11 +203,21 @@ function App() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold text-gray-600 mb-1">Amount (KES)</label>
+                    <label className="block text-sm font-semibold text-gray-600 mb-1">House Number *</label>
                     <input 
                       type="text" 
+                      value={receiptData.houseNumber}
+                      onChange={(e) => setReceiptData({...receiptData, houseNumber: e.target.value})}
+                      className="input-modern"
+                      placeholder="e.g., A12, B5, 3B"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-600 mb-1">Amount Paid (KES)</label>
+                    <input 
+                      type="number" 
                       value={receiptData.amount}
-                      onChange={(e) => setReceiptData({...receiptData, amount: e.target.value})}
+                      onChange={(e) => handleAmountChange(e.target.value)}
                       className="input-modern"
                       placeholder="e.g., 450.00"
                     />
@@ -192,7 +252,62 @@ function App() {
                       placeholder="M-Pesa transaction code"
                     />
                   </div>
+                  
+                  {/* New Fields */}
                   <div>
+                    <label className="block text-sm font-semibold text-gray-600 mb-1">Previous Rent Balance (KES)</label>
+                    <input 
+                      type="number" 
+                      value={receiptData.previousBalance}
+                      onChange={(e) => handlePreviousBalanceChange(e.target.value)}
+                      className="input-modern"
+                      placeholder="0.00"
+                    />
+                    <p className="text-xs text-gray-400 mt-1">Previous unpaid balance (if any)</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-600 mb-1">Paid For Month *</label>
+                    <select 
+                      value={receiptData.paidForMonth}
+                      onChange={(e) => setReceiptData({...receiptData, paidForMonth: e.target.value})}
+                      className="input-modern"
+                    >
+                      <option value="">Select Month</option>
+                      <option value="January">January</option>
+                      <option value="February">February</option>
+                      <option value="March">March</option>
+                      <option value="April">April</option>
+                      <option value="May">May</option>
+                      <option value="June">June</option>
+                      <option value="July">July</option>
+                      <option value="August">August</option>
+                      <option value="September">September</option>
+                      <option value="October">October</option>
+                      <option value="November">November</option>
+                      <option value="December">December</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-600 mb-1">Monthly Rent (KES)</label>
+                    <input 
+                      type="text" 
+                      value={`${MONTHLY_RENT.toFixed(2)}`}
+                      disabled
+                      className="input-modern bg-gray-100"
+                    />
+                    <p className="text-xs text-gray-400 mt-1">Fixed rent amount</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-600 mb-1">Current Rent Balance (KES)</label>
+                    <input 
+                      type="text" 
+                      value={receiptData.currentBalance}
+                      disabled
+                      className="input-modern bg-gray-100 font-bold text-blue-600"
+                    />
+                    <p className="text-xs text-gray-400 mt-1">Auto-calculated: (Previous + Rent) - Paid</p>
+                  </div>
+                  <div className="md:col-span-2">
                     <label className="block text-sm font-semibold text-gray-600 mb-1">Description</label>
                     <input 
                       type="text" 
@@ -214,7 +329,7 @@ function App() {
                   
                   {receiptData.amount && (
                     <PDFDownloadLink 
-                      document={<ReceiptPDF receipt={{...receiptData, receiptNumber: 'PREVIEW'}} />} 
+                      document={<ReceiptPDF receipt={receiptData} monthlyRent={MONTHLY_RENT} />} 
                       fileName={`511Homes_receipt_${receiptData.txnId}.pdf`}
                     >
                       {({ loading }) => (
@@ -245,13 +360,15 @@ function App() {
                       <div className="flex-1">
                         <p className="font-bold text-gray-800">{receipt.receiptNumber}</p>
                         <p className="text-sm text-gray-600">
-                          📅 {receipt.date} | 👤 {receipt.sender} | 💰 KES {receipt.amount}
+                          🏠 {receipt.houseNumber || 'N/A'} | 👤 {receipt.sender} | 💰 KES {receipt.amount}
                         </p>
-                        <p className="text-xs text-gray-500 font-mono">🔑 {receipt.txnId}</p>
+                        <p className="text-xs text-gray-500">
+                          📅 {receipt.date} | 📆 {receipt.paidForMonth || 'N/A'} | Balance: KES {receipt.currentBalance}
+                        </p>
                       </div>
                       <div className="flex gap-2">
                         <PDFDownloadLink 
-                          document={<ReceiptPDF receipt={receipt} />} 
+                          document={<ReceiptPDF receipt={receipt} monthlyRent={MONTHLY_RENT} />} 
                           fileName={`511Homes_receipt_${receipt.receiptNumber}.pdf`}
                         >
                           {({ loading }) => (
@@ -278,6 +395,7 @@ function App() {
         {/* Footer */}
         <div className="text-center mt-8 text-white text-opacity-75 text-sm">
           <p>© 2026 511 HOMES | Official Receipt Generator | Secure & Private</p>
+          <p className="text-xs mt-1">Monthly Rent: KES {MONTHLY_RENT.toFixed(2)}</p>
         </div>
       </div>
     </div>

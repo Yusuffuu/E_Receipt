@@ -19,9 +19,26 @@
   }
 
   body {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background-image: url('/bgimage.jpeg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
     min-height: 100vh;
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    position: relative;
+  }
+
+  /* Optional: Add a dark overlay for better text readability */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: -1;
   }
 
   /* Custom scrollbar */
@@ -120,6 +137,7 @@
 .mb-4 { margin-bottom: 1rem; }
 .mb-6 { margin-bottom: 1.5rem; }
 .mb-8 { margin-bottom: 2rem; }
+.mt-1 { margin-top: 0.25rem; }
 .mt-2 { margin-top: 0.5rem; }
 .mt-3 { margin-top: 0.75rem; }
 .mt-4 { margin-top: 1rem; }
@@ -157,11 +175,13 @@
 .space-y-6 > :not([hidden]) ~ :not([hidden]) { margin-top: 1.5rem; }
 .bg-white { background-color: white; }
 .bg-gray-50 { background-color: #f9fafb; }
+.bg-gray-100 { background-color: #f3f4f6; }
 .bg-gray-200 { background-color: #e5e7eb; }
 .bg-blue-600 { background-color: #2563eb; }
 .bg-green-600 { background-color: #16a34a; }
 .bg-red-600 { background-color: #dc2626; }
 .text-white { color: white; }
+.text-gray-400 { color: #9ca3af; }
 .text-gray-500 { color: #6b7280; }
 .text-gray-600 { color: #4b5563; }
 .text-gray-700 { color: #374151; }
@@ -170,6 +190,7 @@
 .text-green-600 { color: #16a34a; }
 .text-red-600 { color: #dc2626; }
 .font-semibold { font-weight: 600; }
+.text-xs { font-size: 0.75rem; }
 .text-sm { font-size: 0.875rem; }
 .text-lg { font-size: 1.125rem; }
 .text-xl { font-size: 1.25rem; }

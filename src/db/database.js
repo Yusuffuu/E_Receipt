@@ -2,7 +2,7 @@ import Dexie from 'dexie';
 
 export const db = new Dexie('MpesaReceiptsDB');
 db.version(1).stores({
-  receipts: '++id, receiptNumber, date, amount, sender, txnId, createdAt'
+  receipts: '++id, receiptNumber, date, amount, sender, txnId, createdAt, houseNumber, previousBalance, paidForMonth, currentBalance'
 });
 
 export async function saveReceipt(receiptData) {
