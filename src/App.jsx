@@ -94,7 +94,7 @@ function App() {
             className={`px-6 py-3 rounded-xl font-semibold transition-all duration-300 ${
               !showHistory 
                 ? 'bg-white text-blue-600 shadow-lg scale-105' 
-                : 'bg-white bg-opacity-20 text-white hover:bg-opacity-30'
+                : 'bg-white bg-opacity-20 text-blue-600 hover:bg-opacity-30'
             }`}
           >
             📝 New Receipt
@@ -104,7 +104,7 @@ function App() {
             className={`px-6 py-3 rounded-xl font-semibold transition-all duration-300 ${
               showHistory 
                 ? 'bg-white text-blue-600 shadow-lg scale-105' 
-                : 'bg-white bg-opacity-20 text-white hover:bg-opacity-30'
+                : 'bg-white bg-opacity-20 text-blue-600 hover:bg-opacity-30'
             }`}
           >
             📚 History ({pastReceipts.length})
@@ -116,7 +116,7 @@ function App() {
           {!showHistory ? (
             <div className="space-y-6">
               {/* SMS Input Section */}
-              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-xl">
+              <div className="bg-linear-to-r from-blue-50 to-indigo-50 p-6 rounded-xl">
                 <label className="block font-bold text-gray-700 mb-2 text-lg">
                   📱 Paste M-Pesa SMS
                 </label>

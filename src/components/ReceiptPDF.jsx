@@ -116,6 +116,7 @@ const styles = StyleSheet.create({
   },
 });
 
+// Make sure this is exported correctly
 export function ReceiptPDF({ receipt }) {
   // Get current date and time for receipt generation
   const getCurrentDateTime = () => {
@@ -127,7 +128,7 @@ export function ReceiptPDF({ receipt }) {
     const minutes = String(now.getMinutes()).padStart(2, '0');
     const ampm = hours >= 12 ? 'PM' : 'AM';
     hours = hours % 12;
-    hours = hours ? hours : 12; // Convert 0 to 12
+    hours = hours ? hours : 12;
     const timeStr = `${hours}:${minutes} ${ampm}`;
     
     return `${day}/${month}/${year} ${timeStr}`;
@@ -157,7 +158,7 @@ export function ReceiptPDF({ receipt }) {
         {/* Header with Logo */}
         <View style={styles.header}>
           <View style={styles.logoContainer}>
-            <Image src="/house.jpeg" style={styles.logo} />
+            {receipt.logo && <Image src={receipt.logo} style={styles.logo} />}
           </View>
           <View style={styles.titleContainer}>
             <Text style={styles.businessName}>511 HOMES</Text>
@@ -222,3 +223,6 @@ export function ReceiptPDF({ receipt }) {
     </Document>
   );
 }
+
+// Also add a default export for safety
+export default ReceiptPDF;
