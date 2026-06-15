@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { PDFDownloadLink } from '@react-pdf/renderer';
-import { parseMPesaSMS } from './utils/mpesaParser';
-import { saveReceipt, getAllReceipts, deleteReceipt } from './db/database';
-import { ReceiptPDF } from './components/ReceiptPDF';
+import { parseMPesaSMS } from '../utils/mpesaParser';
+import { saveReceipt, getAllReceipts, deleteReceipt } from '../db/database';
+import { ReceiptPDF } from '../components/ReceiptPDF';
 
-function App() {
+function ReceiptGenerator() {
   const [smsText, setSmsText] = useState('');
   const [receiptData, setReceiptData] = useState({
     amount: '',
@@ -22,8 +22,7 @@ function App() {
   const [showHistory, setShowHistory] = useState(false);
   const [isParsing, setIsParsing] = useState(false);
 
-  // Constants
-  const MONTHLY_RENT = 2000; // Fixed rent amount
+  const MONTHLY_RENT = 2000;
 
   useEffect(() => {
     loadHistory();
@@ -34,7 +33,6 @@ function App() {
     setPastReceipts(receipts);
   };
 
-  // Calculate current balance
   const calculateCurrentBalance = (previousBalance, amountPaid) => {
     const prev = parseFloat(previousBalance) || 0;
     const paid = parseFloat(amountPaid) || 0;
@@ -48,7 +46,7 @@ function App() {
       alert('📱 Please paste an M-Pesa SMS message');
       return;
     }
-    
+
     setIsParsing(true);
     setTimeout(() => {
       const parsed = parseMPesaSMS(smsText);
@@ -68,9 +66,8 @@ function App() {
     }, 500);
   };
 
-  // Update current balance when amount, previous balance, or monthly rent changes
   const handleAmountChange = (value) => {
-    setReceiptData(prev => {
+    setReceiptData((prev) => {
       const newAmount = value;
       const newCurrentBalance = calculateCurrentBalance(prev.previousBalance, newAmount);
       return { ...prev, amount: newAmount, currentBalance: newCurrentBalance };
@@ -78,7 +75,7 @@ function App() {
   };
 
   const handlePreviousBalanceChange = (value) => {
-    setReceiptData(prev => {
+    setReceiptData((prev) => {
       const newPreviousBalance = value;
       const newCurrentBalance = calculateCurrentBalance(newPreviousBalance, prev.amount);
       return { ...prev, previousBalance: newPreviousBalance, currentBalance: newCurrentBalance };
@@ -117,42 +114,50 @@ function App() {
   const clearForm = () => {
     setSmsText('');
     setReceiptData({
-      amount: '', sender: '', date: '', time: '', txnId: '', 
-      description: 'Payment for rent', houseNumber: '', 
-      previousBalance: '0', paidForMonth: '', currentBalance: '0'
+      amount: '',
+      sender: '',
+      date: '',
+      time: '',
+      txnId: '',
+      description: 'Payment for rent',
+      houseNumber: '',
+      previousBalance: '0',
+      paidForMonth: '',
+      currentBalance: '0'
     });
   };
 
   return (
     <div className="min-h-screen py-8 px-4">
       <div className="container mx-auto max-w-6xl">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-5xl font-bold text-white mb-2 drop-shadow-lg">
-            🏠 511 HOMES - Receipt Generator
-          </h1>
-          <p className="text-white text-opacity-90 text-lg">
-            Transform M-Pesa SMS into professional receipts
-          </p>
+        
+        <div className="w-full max-w-7xl mx-auto mb-8 text-center px-4">
+          <div>
+            <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold text-white drop-shadow-lg leading-tight">
+              🏠 511 HOMES - Receipt Generator
+            </h1>
+            <p className="text-white text-opacity-90 text-lg sm:text-base md:text-lg mt-2">
+              Transform M-Pesa SMS into professional receipts
+            </p>
+          </div>
         </div>
 
-        {/* Tab Buttons */}
         <div className="flex gap-3 mb-6 justify-center">
-          <button 
+          <button
             onClick={() => setShowHistory(false)}
             className={`px-6 py-3 rounded-xl font-semibold transition-all duration-300 ${
-              !showHistory 
-                ? 'bg-white text-blue-600 shadow-lg scale-105' 
+              !showHistory
+                ? 'bg-white text-blue-600 shadow-lg scale-105'
                 : 'bg-white bg-opacity-20 text-blue-600 hover:bg-opacity-30'
             }`}
           >
             📝 New Receipt
           </button>
-          <button 
+          <button
             onClick={() => { setShowHistory(true); loadHistory(); }}
             className={`px-6 py-3 rounded-xl font-semibold transition-all duration-300 ${
-              showHistory 
-                ? 'bg-white text-blue-600 shadow-lg scale-105' 
+              showHistory
+                ? 'bg-white text-blue-600 shadow-lg scale-105'
                 : 'bg-white bg-opacity-20 text-blue-600 hover:bg-opacity-30'
             }`}
           >
@@ -160,22 +165,20 @@ function App() {
           </button>
         </div>
 
-        {/* Main Content */}
         <div className="glass-card p-6 md:p-8">
           {!showHistory ? (
             <div className="space-y-6">
-              {/* SMS Input Section */}
               <div className="bg-linear-to-r from-blue-50 to-indigo-50 p-6 rounded-xl">
                 <label className="block font-bold text-gray-700 mb-2 text-lg">
                   📱 Paste M-Pesa SMS
                 </label>
-                <textarea 
+                <textarea
                   className="input-modern h-32 font-mono text-sm"
                   value={smsText}
                   onChange={(e) => setSmsText(e.target.value)}
                   placeholder="Paste your M-Pesa confirmation SMS here..."
                 />
-                <button 
+                <button
                   onClick={handleParse}
                   disabled={isParsing}
                   className="mt-3 btn-primary w-full md:w-auto"
@@ -184,38 +187,36 @@ function App() {
                 </button>
               </div>
 
-              {/* Receipt Form Section */}
               <div className="border-2 border-dashed border-gray-200 rounded-xl p-6">
                 <h2 className="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-2">
                   ✏️ Receipt Details
                 </h2>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {/* Existing Fields */}
                   <div>
                     <label className="block text-sm font-semibold text-gray-600 mb-1">Customer Name</label>
-                    <input 
-                      type="text" 
+                    <input
+                      type="text"
                       value={receiptData.sender}
-                      onChange={(e) => setReceiptData({...receiptData, sender: e.target.value})}
+                      onChange={(e) => setReceiptData({ ...receiptData, sender: e.target.value })}
                       className="input-modern"
                       placeholder="Customer name"
                     />
                   </div>
                   <div>
                     <label className="block text-sm font-semibold text-gray-600 mb-1">House Number *</label>
-                    <input 
-                      type="text" 
+                    <input
+                      type="text"
                       value={receiptData.houseNumber}
-                      onChange={(e) => setReceiptData({...receiptData, houseNumber: e.target.value})}
+                      onChange={(e) => setReceiptData({ ...receiptData, houseNumber: e.target.value })}
                       className="input-modern"
                       placeholder="e.g., A12, B5, 3B"
                     />
                   </div>
                   <div>
                     <label className="block text-sm font-semibold text-gray-600 mb-1">Amount Paid (KES)</label>
-                    <input 
-                      type="number" 
+                    <input
+                      type="number"
                       value={receiptData.amount}
                       onChange={(e) => handleAmountChange(e.target.value)}
                       className="input-modern"
@@ -224,40 +225,38 @@ function App() {
                   </div>
                   <div>
                     <label className="block text-sm font-semibold text-gray-600 mb-1">Payment Date</label>
-                    <input 
-                      type="text" 
+                    <input
+                      type="text"
                       value={receiptData.date}
-                      onChange={(e) => setReceiptData({...receiptData, date: e.target.value})}
+                      onChange={(e) => setReceiptData({ ...receiptData, date: e.target.value })}
                       className="input-modern"
                       placeholder="DD/MM/YYYY"
                     />
                   </div>
                   <div>
                     <label className="block text-sm font-semibold text-gray-600 mb-1">Payment Time</label>
-                    <input 
-                      type="text" 
+                    <input
+                      type="text"
                       value={receiptData.time}
-                      onChange={(e) => setReceiptData({...receiptData, time: e.target.value})}
+                      onChange={(e) => setReceiptData({ ...receiptData, time: e.target.value })}
                       className="input-modern"
                       placeholder="HH:MM AM/PM"
                     />
                   </div>
                   <div>
                     <label className="block text-sm font-semibold text-gray-600 mb-1">Transaction ID</label>
-                    <input 
-                      type="text" 
+                    <input
+                      type="text"
                       value={receiptData.txnId}
-                      onChange={(e) => setReceiptData({...receiptData, txnId: e.target.value})}
+                      onChange={(e) => setReceiptData({ ...receiptData, txnId: e.target.value })}
                       className="input-modern font-mono text-sm"
                       placeholder="M-Pesa transaction code"
                     />
                   </div>
-                  
-                  {/* New Fields */}
                   <div>
                     <label className="block text-sm font-semibold text-gray-600 mb-1">Previous Rent Balance (KES)</label>
-                    <input 
-                      type="number" 
+                    <input
+                      type="number"
                       value={receiptData.previousBalance}
                       onChange={(e) => handlePreviousBalanceChange(e.target.value)}
                       className="input-modern"
@@ -267,9 +266,9 @@ function App() {
                   </div>
                   <div>
                     <label className="block text-sm font-semibold text-gray-600 mb-1">Paid For Month *</label>
-                    <select 
+                    <select
                       value={receiptData.paidForMonth}
-                      onChange={(e) => setReceiptData({...receiptData, paidForMonth: e.target.value})}
+                      onChange={(e) => setReceiptData({ ...receiptData, paidForMonth: e.target.value })}
                       className="input-modern"
                     >
                       <option value="">Select Month</option>
@@ -289,8 +288,8 @@ function App() {
                   </div>
                   <div>
                     <label className="block text-sm font-semibold text-gray-600 mb-1">Monthly Rent (KES)</label>
-                    <input 
-                      type="text" 
+                    <input
+                      type="text"
                       value={`${MONTHLY_RENT.toFixed(2)}`}
                       disabled
                       className="input-modern bg-gray-100"
@@ -299,8 +298,8 @@ function App() {
                   </div>
                   <div>
                     <label className="block text-sm font-semibold text-gray-600 mb-1">Current Rent Balance (KES)</label>
-                    <input 
-                      type="text" 
+                    <input
+                      type="text"
                       value={receiptData.currentBalance}
                       disabled
                       className="input-modern bg-gray-100 font-bold text-blue-600"
@@ -309,10 +308,10 @@ function App() {
                   </div>
                   <div className="md:col-span-2">
                     <label className="block text-sm font-semibold text-gray-600 mb-1">Description</label>
-                    <input 
-                      type="text" 
+                    <input
+                      type="text"
                       value={receiptData.description}
-                      onChange={(e) => setReceiptData({...receiptData, description: e.target.value})}
+                      onChange={(e) => setReceiptData({ ...receiptData, description: e.target.value })}
                       className="input-modern"
                       placeholder="e.g., Payment for rent"
                     />
@@ -320,16 +319,12 @@ function App() {
                 </div>
 
                 <div className="flex flex-wrap gap-3 mt-6">
-                  <button 
-                    onClick={handleSaveReceipt}
-                    className="btn-primary"
-                  >
+                  <button onClick={handleSaveReceipt} className="btn-primary">
                     💾 Save Receipt
                   </button>
-                  
                   {receiptData.amount && (
-                    <PDFDownloadLink 
-                      document={<ReceiptPDF receipt={receiptData} monthlyRent={MONTHLY_RENT} />} 
+                    <PDFDownloadLink
+                      document={<ReceiptPDF receipt={receiptData} monthlyRent={MONTHLY_RENT} />}
                       fileName={`511Homes_receipt_${receiptData.txnId}.pdf`}
                     >
                       {({ loading }) => (
@@ -339,7 +334,6 @@ function App() {
                       )}
                     </PDFDownloadLink>
                   )}
-                  
                   <button onClick={clearForm} className="btn-secondary">
                     🗑️ Clear
                   </button>
@@ -355,7 +349,7 @@ function App() {
                 </div>
               ) : (
                 <div className="grid gap-3">
-                  {pastReceipts.map(receipt => (
+                  {pastReceipts.map((receipt) => (
                     <div key={receipt.id} className="bg-gray-50 p-4 rounded-xl flex flex-wrap justify-between items-center gap-3 hover:shadow-md transition-all">
                       <div className="flex-1">
                         <p className="font-bold text-gray-800">{receipt.receiptNumber}</p>
@@ -367,8 +361,8 @@ function App() {
                         </p>
                       </div>
                       <div className="flex gap-2">
-                        <PDFDownloadLink 
-                          document={<ReceiptPDF receipt={receipt} monthlyRent={MONTHLY_RENT} />} 
+                        <PDFDownloadLink
+                          document={<ReceiptPDF receipt={receipt} monthlyRent={MONTHLY_RENT} />}
                           fileName={`511Homes_receipt_${receipt.receiptNumber}.pdf`}
                         >
                           {({ loading }) => (
@@ -377,7 +371,7 @@ function App() {
                             </button>
                           )}
                         </PDFDownloadLink>
-                        <button 
+                        <button
                           onClick={() => handleDelete(receipt.id)}
                           className="bg-red-600 text-white px-3 py-1 rounded-lg hover:bg-red-700 transition"
                         >
@@ -392,7 +386,6 @@ function App() {
           )}
         </div>
 
-        {/* Footer */}
         <div className="text-center mt-8 text-white text-opacity-75 text-sm">
           <p>© 2026 511 HOMES | Official Receipt Generator | Secure & Private</p>
           <p className="text-xs mt-1">Monthly Rent: KES {MONTHLY_RENT.toFixed(2)}</p>
@@ -402,4 +395,4 @@ function App() {
   );
 }
 
-export default App;
+export default ReceiptGenerator;
