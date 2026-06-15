@@ -51,7 +51,7 @@ router.post('/submit', uploadID.fields([
       `INSERT INTO tenants 
        (full_name, id_number, phone, email, occupation, next_of_kin_name, 
         next_of_kin_phone, house_number, id_front_path, id_back_path) 
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING id`,
       [full_name, id_number, phone, email, occupation, next_of_kin_name, 
        next_of_kin_phone, house_number, idFrontPath, idBackPath]
     );
@@ -59,7 +59,7 @@ router.post('/submit', uploadID.fields([
 
     // Insert initial agreement log (pdf_path will be updated later if PDF generation succeeds)
     await db.execute(
-      'INSERT INTO agreement_logs (tenant_id, pdf_path, email_sent) VALUES (?, ?, ?)',
+      'INSERT INTO agreement_logs (tenant_id, pdf_path, email_sent) VALUES ($1, $2, $3)',
       [tenantId, null, false]
     );
 
@@ -85,12 +85,12 @@ router.post('/submit', uploadID.fields([
 
       // Update tenant with PDF path
       await db.execute(
-        'UPDATE tenants SET agreement_pdf_path = ? WHERE id = ?',
+        'UPDATE tenants SET agreement_pdf_path = $1 WHERE id = $2',
         [pdfPath, tenantId]
       );
       // Update agreement log with the PDF path
       await db.execute(
-        'UPDATE agreement_logs SET pdf_path = ? WHERE tenant_id = ?',
+        'UPDATE agreement_logs SET pdf_path = $1 WHERE tenant_id = $2',
         [pdfPath, tenantId]
       );
       console.log('PDF path saved to DB');
@@ -105,7 +105,7 @@ router.post('/submit', uploadID.fields([
       emailResult = await sendAgreementEmail(email, full_name, pdfPath, house_number);
       if (emailResult.success) {
         await db.execute(
-          'UPDATE agreement_logs SET email_sent = true, email_sent_at = NOW() WHERE tenant_id = ?',
+          'UPDATE agreement_logs SET email_sent = true, email_sent_at = NOW() WHERE tenant_id = $1',
           [tenantId]
         );
       }
@@ -156,7 +156,7 @@ router.get('/all', async (req, res) => {
 router.get('/:id', async (req, res) => {
   try {
     const rows = await db.query(
-      'SELECT * FROM tenants WHERE id = ?',
+      'SELECT * FROM tenants WHERE id = $1',
       [req.params.id]
     );
     if (rows.length === 0) {
@@ -173,7 +173,7 @@ router.get('/:id', async (req, res) => {
 router.delete('/:id', async (req, res) => {
   try {
     const rows = await db.query(
-      'SELECT id_front_path, id_back_path, agreement_pdf_path FROM tenants WHERE id = ?',
+      'SELECT id_front_path, id_back_path, agreement_pdf_path FROM tenants WHERE id = $1',
       [req.params.id]
     );
     if (rows.length > 0) {
@@ -183,7 +183,7 @@ router.delete('/:id', async (req, res) => {
       if (tenant.agreement_pdf_path) await fs.unlink(tenant.agreement_pdf_path).catch(() => {});
     }
 
-    await db.execute('DELETE FROM tenants WHERE id = ?', [req.params.id]);
+    await db.execute('DELETE FROM tenants WHERE id = $1', [req.params.id]);
     res.json({ success: true, message: 'Tenant deleted successfully' });
   } catch (error) {
     console.error('Delete error:', error);

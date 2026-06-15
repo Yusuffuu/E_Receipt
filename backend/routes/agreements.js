@@ -8,7 +8,7 @@ const router = express.Router();
 router.get('/download/:id', async (req, res) => {
   try {
     const tenants = await db.query(
-      'SELECT agreement_pdf_path FROM tenants WHERE id = ?',
+      'SELECT agreement_pdf_path FROM tenants WHERE id = $1',
       [req.params.id]
     );
 
@@ -42,7 +42,7 @@ router.get('/download/:id', async (req, res) => {
 // Get all agreement logs (protected)
 router.get('/logs', async (req, res) => {
   try {
-    const [logs] = await db.execute(
+    const logs = await db.query(
       `SELECT l.*, t.full_name, t.house_number 
        FROM agreement_logs l 
        JOIN tenants t ON l.tenant_id = t.id 
