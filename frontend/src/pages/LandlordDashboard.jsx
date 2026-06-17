@@ -104,7 +104,7 @@ export default function LandlordDashboard() {
   }
 
   return (
-      <div className="min-h-screen py-8 px-4 bg-linear-to-br from-purple-600 to-blue-500">
+      <div className="min-h-screen py-8 px-4">
         <div className="container mx-auto max-w-6xl">
           <div className="relative w-full max-w-7xl mx-auto mb-8 text-center px-4">
             <div>

@@ -25,7 +25,7 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-purple-600 to-blue-500 p-4">
+    <div className="min-h-screen flex items-center justify-center">
       <div className="glass-card w-full max-w-md p-8">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-gray-800">🏠 511 HOMES</h1>
