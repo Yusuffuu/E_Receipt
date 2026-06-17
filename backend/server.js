@@ -10,10 +10,34 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Middleware
+// Parse comma-separated allowed origins from environment variable
+const allowedOrigins = (process.env.FRONTEND_URL || 'http://localhost:5173')
+  .split(',')
+  .map(url => url.trim())
+  .filter(url => url.length > 0);
+
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl)
+    if (!origin) return callback(null, true);
+    
+    const trimmedOrigin = origin.replace(/\/$/, ''); // Remove trailing slash
+    
+    // Allow all Vercel subdomains (including preview deployments)
+    if (/^https:\/\/[a-zA-Z0-9-]+\.vercel\.app$/.test(trimmedOrigin)) {
+      return callback(null, true);
+    }
+    
+    // Check against explicit allowed origins
+    if (allowedOrigins.includes(trimmedOrigin)) {
+      return callback(null, true);
+    }
+    
+    callback(new Error(`Origin ${origin} not allowed by CORS`));
+  },
   credentials: true
 }));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
