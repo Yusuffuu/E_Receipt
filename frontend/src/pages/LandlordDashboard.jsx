@@ -8,7 +8,8 @@ export default function LandlordDashboard() {
   const [error, setError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
 
-  const shareLink = `${window.location.origin}/tenant-form`;
+  // Hardcoded tenant form link (replace with your actual Vercel URL)
+  const shareLink = 'https://511-homes.vercel.app/tenant-form';
 
   const copyLink = async () => {
     try {
@@ -104,101 +105,104 @@ export default function LandlordDashboard() {
   }
 
   return (
-      <div className="min-h-screen py-8 px-4">
-        <div className="container mx-auto max-w-6xl">
-          <div className="relative w-full max-w-7xl mx-auto mb-8 text-center px-4">
-            <div>
-              <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold text-white drop-shadow-lg leading-tight">
-                🏠 511 HOMES - Landlord Dashboard
-              </h1>
-              <p className="text-white text-opacity-90 text-lg sm:text-base md:text-lg mt-2">
-                View and manage your tenants, download agreements, and keep track of everything in one place.
-              </p>
-            </div>
-          </div>
-
-          <div className="glass-card p-6 md:p-8">
-            <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between mb-6">
-              <div>
-                <h1 className="text-3xl font-bold text-gray-800">📋 Tenants List</h1>
-                <p className="text-gray-600 mt-2">Share a tenant form link, view tenant details, and download agreements from one page.</p>
-              </div>
-              <button
-                type="button"
-                onClick={copyLink}
-                className="btn-success inline-flex items-center justify-center rounded-lg px-5 py-3 text-lg font-semibold"
-              >
-                🔗 Copy Tenant Form Link
-              </button>
-            </div>
-            <div className="flex flex-col md:flex-row justify-between items-center mb-6">
-              <div className="relative w-full md:w-80">
-                <input
-                  type="text"
-                  placeholder="Search by name, ID, house or email..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="input-modern pl-10 pr-4 py-2 w-full"
-                />
-                <span className="absolute left-3 top-2.5 text-gray-400">🔍</span>
-              </div>
-            </div>
-
-            {error && (
-              <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-                {error}
-              </div>
-            )}
-
-            {filteredTenants.length === 0 ? (
-              <div className="text-center py-12">
-                <p className="text-gray-500 text-lg">No tenants found.</p>
-              </div>
-            ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead className="bg-gray-100">
-                    <tr>
-                      <th className="p-2 text-left">Name</th>
-                      <th className="p-2 text-left">ID</th>
-                      <th className="p-2 text-left">House</th>
-                      <th className="p-2 text-left">Email</th>
-                      <th className="p-2 text-left">Phone</th>
-                      <th className="p-2 text-left">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filteredTenants.map((tenant) => (
-                      <tr key={tenant.id} className="border-b hover:bg-gray-50 transition">
-                        <td className="p-2 font-medium">{tenant.full_name}</td>
-                        <td className="p-2">{tenant.id_number}</td>
-                        <td className="p-2">{tenant.house_number}</td>
-                        <td className="p-2">{tenant.email}</td>
-                        <td className="p-2">{tenant.phone || '—'}</td>
-                        <td className="p-2 flex flex-wrap items-center gap-2">
-                          {tenant.agreement_pdf_path && (
-                            <button
-                              onClick={() => handleDownload(tenant)}
-                              className="btn-primary px-3 py-2 text-sm"
-                            >
-                              PDF
-                            </button>
-                          )}
-                          <button
-                            onClick={() => handleDelete(tenant.id)}
-                            className="btn-secondary px-3 py-2 text-sm"
-                          >
-                            Delete
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
+    <div className="min-h-screen py-8 px-4">
+      <div className="container mx-auto max-w-6xl">
+        <div className="relative w-full max-w-7xl mx-auto mb-8 text-center px-4">
+          <div>
+            <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold text-white drop-shadow-lg leading-tight">
+              🏠 511 HOMES - Landlord Dashboard
+            </h1>
+            <p className="text-white text-opacity-90 text-lg sm:text-base md:text-lg mt-2">
+              View and manage your tenants, download agreements, and keep track of everything in one place.
+            </p>
           </div>
         </div>
+
+        <div
+          className="glass-card p-6 md:p-8"
+          style={{ background: 'rgba(255, 255, 255, 0.7)', backdropFilter: 'blur(12px)' }}
+        >
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between mb-6">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-800">📋 Tenants List</h1>
+              <p className="text-gray-600 mt-2">Share a tenant form link, view tenant details, and download agreements from one page.</p>
+            </div>
+            <button
+              type="button"
+              onClick={copyLink}
+              className="btn-success inline-flex items-center justify-center rounded-lg px-5 py-3 text-lg font-semibold"
+            >
+              🔗 Copy Tenant Form Link
+            </button>
+          </div>
+          <div className="flex flex-col md:flex-row justify-between items-center mb-6">
+            <div className="relative w-full md:w-80">
+              <input
+                type="text"
+                placeholder="Search by name, ID, house or email..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="input-modern pl-10 pr-4 py-2 w-full"
+              />
+              <span className="absolute left-3 top-2.5 text-gray-400">🔍</span>
+            </div>
+          </div>
+
+          {error && (
+            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+              {error}
+            </div>
+          )}
+
+          {filteredTenants.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-gray-500 text-lg">No tenants found.</p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead className="bg-gray-100">
+                  <tr>
+                    <th className="p-2 text-left">Name</th>
+                    <th className="p-2 text-left">ID</th>
+                    <th className="p-2 text-left">House</th>
+                    <th className="p-2 text-left">Email</th>
+                    <th className="p-2 text-left">Phone</th>
+                    <th className="p-2 text-left">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredTenants.map((tenant) => (
+                    <tr key={tenant.id} className="border-b hover:bg-gray-50 transition">
+                      <td className="p-2 font-medium">{tenant.full_name}</td>
+                      <td className="p-2">{tenant.id_number}</td>
+                      <td className="p-2">{tenant.house_number}</td>
+                      <td className="p-2">{tenant.email}</td>
+                      <td className="p-2">{tenant.phone || '—'}</td>
+                      <td className="p-2 flex flex-wrap items-center gap-2">
+                        {tenant.agreement_pdf_path && (
+                          <button
+                            onClick={() => handleDownload(tenant)}
+                            className="btn-primary px-3 py-2 text-sm"
+                          >
+                            PDF
+                          </button>
+                        )}
+                        <button
+                          onClick={() => handleDelete(tenant.id)}
+                          className="btn-secondary px-3 py-2 text-sm"
+                        >
+                          Delete
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
       </div>
+    </div>
   );
 }
