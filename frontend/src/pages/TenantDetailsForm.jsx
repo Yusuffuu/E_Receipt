@@ -236,7 +236,7 @@ export default function TenantDetailsForm() {
   };
 
   return (
-    <div className="min-h-screen py-8 px-4 bg-linear-to-br from-purple-600 to-blue-500">
+    <div className="min-h-screen py-8 px-4">
       <div className="container mx-auto max-w-3xl">
         <div className="glass-card p-6 md:p-8">
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-8">
