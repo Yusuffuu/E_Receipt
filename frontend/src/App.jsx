@@ -1,4 +1,5 @@
-import { BrowserRouter, Routes, Route, useLocation, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation, Navigate, useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
 import ReceiptGenerator from './pages/ReceiptGenerator';
 import Login from './pages/Login';
 import TenantDetailsForm from './pages/TenantDetailsForm';
@@ -8,7 +9,18 @@ import NavBar from './components/NavBar';
 
 function AppContent() {
   const location = useLocation();
+  const navigate = useNavigate();
   const hideNavBar = location.pathname === '/tenant-form';
+
+  // Handle redirect from 404.html (path stored in ?p=...)
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const redirectPath = params.get('p');
+    if (redirectPath && redirectPath !== '/') {
+      // Replace the current URL with the saved path without the query parameter
+      navigate(redirectPath, { replace: true });
+    }
+  }, [location, navigate]);
 
   return (
     <>

@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>511 HOMES - Receipt Generator</title>
+  <script>
+    // Save the full path (including query string) and redirect to root
+    var redirectPath = window.location.pathname + window.location.search;
+    if (redirectPath !== '/') {
+      window.location.href = '/?p=' + encodeURIComponent(redirectPath);
+    } else {
+      window.location.href = '/';
+    }
+  </script>
+</head>
+<body>
+  <p>Redirecting to the app...</p>
+</body>
+</html>
