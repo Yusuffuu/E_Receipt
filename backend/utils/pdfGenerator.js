@@ -153,8 +153,8 @@ async function generateAgreementPDF(tenant) {
       // Landlord Signature Block
       const label = 'Landlord Signature: ';
       doc.font('Helvetica-Bold').text(label, { continued: true });
-      const landlordSignPathJpg = path.join(__dirname, '../uploads/Landlord_sign.jpg');
-      const landlordSignPathPng = path.join(__dirname, '../uploads/Landlord_sign.png');
+      const landlordSignPathJpg = path.join(__dirname, '../public/Landlord_sign.jpg');
+      const landlordSignPathPng = path.join(__dirname, '../public/Landlord_sign.png');
       const landlordSignPath = fs.existsSync(landlordSignPathJpg)
         ? landlordSignPathJpg
         : fs.existsSync(landlordSignPathPng)
