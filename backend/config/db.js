@@ -3,23 +3,43 @@ const dotenv = require('dotenv');
 
 dotenv.config();
 
-const poolConfig = {
-  max: 10,
-  connectionTimeoutMillis: 0
-};
+let poolConfig;
 
-if (process.env.DB_SOCKET) {
-  poolConfig.host = process.env.DB_SOCKET;
+if (process.env.DATABASE_URL) {
+  // Production: use Neon connection string
+  poolConfig = {
+    connectionString: process.env.DATABASE_URL,
+    ssl: { rejectUnauthorized: false },
+    max: 10,
+  };
 } else {
-  poolConfig.host = process.env.DB_HOST || 'localhost';
-  poolConfig.port = process.env.DB_PORT ? Number(process.env.DB_PORT) : 5432;
+  // Local development: use individual env vars
+  poolConfig = {
+    user: process.env.DB_USER || 'root',
+    password: process.env.DB_PASSWORD || '',
+    database: process.env.DB_NAME || '511_homes',
+    max: 10,
+  };
+
+  if (process.env.DB_SOCKET) {
+    poolConfig.host = process.env.DB_SOCKET;
+  } else {
+    poolConfig.host = process.env.DB_HOST || 'localhost';
+    poolConfig.port = process.env.DB_PORT ? Number(process.env.DB_PORT) : 5432;
+  }
 }
 
-poolConfig.user = process.env.DB_USER;
-poolConfig.password = process.env.DB_PASSWORD || '';
-poolConfig.database = process.env.DB_NAME;
-
 const pool = new Pool(poolConfig);
+
+// Test connection on startup (optional)
+pool.connect((err, client, release) => {
+  if (err) {
+    console.error('❌ Database connection error:', err.message);
+  } else {
+    console.log('✅ Connected to database');
+    release();
+  }
+});
 
 const db = {
   query: async (text, params) => {
@@ -28,9 +48,8 @@ const db = {
   },
   execute: async (text, params) => {
     const result = await pool.query(text, params);
-    const insertId = result.rows[0] && Object.prototype.hasOwnProperty.call(result.rows[0], 'id')
-      ? Number(result.rows[0].id)
-      : null;
+    // For INSERT with RETURNING id, the id is in rows[0].id
+    const insertId = result.rows[0]?.id ? Number(result.rows[0].id) : null;
     return { ...result, insertId };
   }
 };
