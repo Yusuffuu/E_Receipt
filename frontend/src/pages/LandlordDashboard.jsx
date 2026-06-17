@@ -118,10 +118,7 @@ export default function LandlordDashboard() {
           </div>
         </div>
 
-        <div
-          className="glass-card p-6 md:p-8"
-          style={{ background: 'rgba(255, 255, 255, 0.7)', backdropFilter: 'blur(12px)' }}
-        >
+        <div className="glass-card p-6 md:p-8">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between mb-6">
             <div>
               <h1 className="text-3xl font-bold text-gray-800">📋 Tenants List</h1>
